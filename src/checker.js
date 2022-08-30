@@ -116,7 +116,7 @@ const whatIsCheckingThisSquare =
         is_king_at_board_edge !== "right" &&
         boardData.at(si - 8 + 1) === checking_piece
       )
-        return _(si - 8 - 1);
+        return _(si - 8 + 1);
     } else {
       // check for white pawn
       if (is_king_at_board_edge !== "left" && boardData.at(si + 8 - 1) === checking_piece)
@@ -125,7 +125,7 @@ const whatIsCheckingThisSquare =
         is_king_at_board_edge !== "right" &&
         boardData.at(si + 8 + 1) === checking_piece
       )
-        return _(si + 8 - 1);
+        return _(si + 8 + 1);
     }
     // 2. Check sneaky horsey
     checking_piece = white ? "n" : "N";
