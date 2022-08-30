@@ -1,0 +1,12 @@
+{
+  "name": "why-is-it-a-checkmate",
+  "version": "1.0.0",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js"
+  },
+  "repository": "https://github.com/rootEnginear/why-is-it-a-checkmate.git",
+  "author": "rootEnginear <rootEnginear@users.noreply.github.com>",
+  "license": "MIT",
+  "type": "module"
+}
