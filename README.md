@@ -1,2 +1,3 @@
-# why-is-it-a-checkmate
-Input FEN and get explanation as an output
+# Why is this a checkmate?
+
+Input FEN and get image explanation as an output

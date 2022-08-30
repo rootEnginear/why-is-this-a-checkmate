@@ -1,4 +1,4 @@
-import { _, $ } from "./const.js";
+import { _, $ } from "./constants.js";
 
 const isWhite = (piece) => /[A-Z]/.test(piece);
 
@@ -75,11 +75,11 @@ const getPossibleSquareAtKing = (boardData, white = true) => {
     ? "a"
     : "x";
   return [
+    square_index,
     square_index - 8 - 1,
     square_index - 8,
     square_index - 8 + 1,
     square_index - 1,
-    square_index,
     square_index + 1,
     square_index + 8 - 1,
     square_index + 8,
@@ -280,66 +280,68 @@ const whatIsCheckingThisSquare =
     }
   };
 
-const MATES = [
-  {
-    name: "start-pos",
-    fen: "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1",
-    mateWhiteKing: false,
-  },
-  { name: "ladder-mate", fen: "1R2k3/R7/8/8/8/8/4K3/8 b - - 0 1", mateWhiteKing: false },
-  {
-    name: "backrank-mate",
-    fen: "k1R5/pp6/8/8/4K3/8/8/8 b - - 0 1",
-    mateWhiteKing: false,
-  },
-  {
-    name: "sniper-mate",
-    fen: "1kr5/QppKP3/8/8/8/4B3/8/8 b - - 0 1",
-    mateWhiteKing: false,
-  },
-  { name: "rookq-mate", fen: "5k2/1R3Q2/8/8/8/8/8/7K w - - 0 1", mateWhiteKing: false },
-  { name: "rook-mate", fen: "1k1R4/8/1K6/8/8/8/8/8 b - - 0 1", mateWhiteKing: false },
-  {
-    name: "smothered-mate",
-    fen: "kr6/ppN5/8/1K6/8/8/8/8 b - - 0 1",
-    mateWhiteKing: false,
-  },
-];
+// const MATES = [
+//   {
+//     name: "start-pos",
+//     fen: "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1",
+//     mateWhiteKing: false,
+//   },
+//   { name: "ladder-mate", fen: "1R2k3/R7/8/8/8/8/4K3/8 b - - 0 1", mateWhiteKing: false },
+//   {
+//     name: "backrank-mate",
+//     fen: "k1R5/pp6/8/8/4K3/8/8/8 b - - 0 1",
+//     mateWhiteKing: false,
+//   },
+//   {
+//     name: "sniper-mate",
+//     fen: "1kr5/QppKP3/8/8/8/4B3/8/8 b - - 0 1",
+//     mateWhiteKing: false,
+//   },
+//   { name: "rookq-mate", fen: "5k2/1R3Q2/8/8/8/8/8/7K b - - 0 1", mateWhiteKing: false },
+//   { name: "rook-mate", fen: "1k1R4/8/1K6/8/8/8/8/8 b - - 0 1", mateWhiteKing: false },
+//   {
+//     name: "smothered-mate",
+//     fen: "kr6/ppN5/8/1K6/8/8/8/8 b - - 0 1",
+//     mateWhiteKing: false,
+//   },
+// ];
 
-const whyIsItAMate = (fen, mateWhiteKing = false) => {
-  console.log(fen);
+export const whyIsItAMate = (fen, mateWhiteKing = false) => {
+  // console.log(fen);
 
   const parsed_fen = transpileFen(fen);
   // console.log(parsed_fen);
 
-  renderBoard(parsed_fen);
+  // renderBoard(parsed_fen);
 
   const squares_for_check = getPossibleSquareAtKing(parsed_fen, mateWhiteKing);
   const what_attack_these_squares = squares_for_check.map(
     whatIsCheckingThisSquare(parsed_fen, mateWhiteKing)
   );
 
-  const color_str = mateWhiteKing ? "White" : "Black";
-  if (!what_attack_these_squares.includes(undefined)) {
-    console.log(`This is a checkmate for ${color_str.toLocaleLowerCase()} king because:`);
-    for (const i in squares_for_check) {
-      console.log(
-        `— ${parsed_fen[what_attack_these_squares[i]].toLocaleUpperCase()}${
-          what_attack_these_squares[i]
-        } is attacking ${squares_for_check[i]}.`
-      );
-    }
-    console.log(`${color_str} king has nowhere to run.`);
-  } else {
-    console.log("This is not a checkmate:");
-    for (const i in squares_for_check) {
-      if (!what_attack_these_squares[i]) {
-        console.log(`— ${squares_for_check[i].toLocaleUpperCase()} has no attacker.`);
-      }
-    }
-    console.log(`${color_str} king is safe.`);
-  }
-  console.log("--------------------------------------------------");
+  return [squares_for_check, what_attack_these_squares, parsed_fen];
+
+  // const color_str = mateWhiteKing ? "White" : "Black";
+  // if (!what_attack_these_squares.includes(undefined)) {
+  //   console.log(`This is a checkmate for ${color_str.toLocaleLowerCase()} king because:`);
+  //   for (const i in squares_for_check) {
+  //     console.log(
+  //       `— ${parsed_fen[what_attack_these_squares[i]].toLocaleUpperCase()}${
+  //         what_attack_these_squares[i]
+  //       } is attacking ${squares_for_check[i]}.`
+  //     );
+  //   }
+  //   console.log(`${color_str} king has nowhere to run.`);
+  // } else {
+  //   console.log("This is not a checkmate:");
+  //   for (const i in squares_for_check) {
+  //     if (!what_attack_these_squares[i]) {
+  //       console.log(`— ${squares_for_check[i].toLocaleUpperCase()} has no attacker.`);
+  //     }
+  //   }
+  //   console.log(`${color_str} king is safe.`);
+  // }
+  // console.log("--------------------------------------------------");
 };
 
-MATES.forEach(({ fen, mateWhiteKing }) => whyIsItAMate(fen, mateWhiteKing));
+// MATES.forEach(({ fen, mateWhiteKing }) => whyIsItAMate(fen, mateWhiteKing));

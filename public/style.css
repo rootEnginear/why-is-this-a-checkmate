@@ -1,0 +1,25 @@
+
+
+.controls {
+  display: flex;
+  gap: 16px;
+  align-items: flex-end;
+}
+
+.controls > label:first-of-type {
+  flex: 1;
+}
+
+.controls > label:first-of-type > input {
+  display: block;
+  width: 100%;
+}
+
+.controls > button {
+  align-items: stretch;
+}
+
+#chessboard {
+  max-width: 500px;
+  margin: 16px auto;
+}

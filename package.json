@@ -1,12 +1,18 @@
 {
   "name": "why-is-it-a-checkmate",
-  "version": "1.0.0",
-  "main": "index.js",
+  "private": true,
+  "version": "0.0.0",
+  "type": "module",
   "scripts": {
-    "start": "node index.js"
+    "dev": "vite",
+    "build": "tsc && vite build",
+    "preview": "vite preview"
   },
-  "repository": "https://github.com/rootEnginear/why-is-it-a-checkmate.git",
-  "author": "rootEnginear <rootEnginear@users.noreply.github.com>",
-  "license": "MIT",
-  "type": "module"
+  "devDependencies": {
+    "typescript": "^4.6.4",
+    "vite": "^3.0.7"
+  },
+  "dependencies": {
+    "cm-chessboard": "^5.2.3"
+  }
 }
