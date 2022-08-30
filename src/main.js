@@ -1,4 +1,4 @@
-import { Chessboard, MARKER_TYPE } from "./cm-chessboard/Chessboard.js";
+import { Chessboard, COLOR, MARKER_TYPE } from "./cm-chessboard/Chessboard.js";
 import { ARROW_TYPE, Arrows } from "./cm-chessboard/extensions/arrows/Arrows.js";
 import { whyIsItAMate } from "./checker.js";
 
@@ -31,7 +31,7 @@ const checkMate = () => {
 
   chessboard.removeArrows();
   chessboard.removeMarkers();
-  chessboard.setPosition(fen, true);
+  chessboard.setPosition(fen);
 
   const [square, attacker, parsed_fen] = whyIsItAMate(fen, white);
 
@@ -65,5 +65,12 @@ const setMate = (fen) => {
   checkMate();
 };
 
+let white_side = false;
+const flip = () => {
+  chessboard.setOrientation(white_side ? COLOR.white : COLOR.black);
+  white_side = !white_side;
+};
+
 window.checkMate = checkMate;
 window.setMate = setMate;
+window.flip = flip;
