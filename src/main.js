@@ -1,6 +1,6 @@
 import { Chessboard, COLOR, MARKER_TYPE } from "./cm-chessboard/Chessboard.js";
 import { ARROW_TYPE, Arrows } from "./cm-chessboard/extensions/arrows/Arrows.js";
-import { whyIsItAMate } from "./checker.js";
+import { findMate } from "./mateFinder/mate_finder.ts";
 
 const redMarker = { class: "marker-circle-red", slice: "markerCircle" };
 
@@ -27,13 +27,12 @@ const chessboard = new Chessboard(document.getElementById("chessboard"), {
 
 const checkMate = () => {
   const fen = document.getElementById("inp-fen").value;
-  const white = document.getElementById("inp-white").checked;
 
   chessboard.removeArrows();
   chessboard.removeMarkers();
   chessboard.setPosition(fen);
 
-  const [square, attacker, parsed_fen] = whyIsItAMate(fen, white);
+  const [, square, attacker, parsed_fen] = findMate(fen);
 
   if (attacker.includes(undefined)) {
     const free_space_index = attacker.indexOf(undefined);
@@ -50,9 +49,11 @@ const checkMate = () => {
     for (const i in square) {
       chessboard.addArrow(ARROW_TYPE.pointy, attacker[i], square[i]);
       chessboard.addMarker(redMarker, square[i]);
-      text += `<br>&bull; ${parsed_fen[attacker[i]].toLocaleUpperCase()}${
-        attacker[i]
-      } is attacking/protecting ${square[i]}.`;
+      let atk_piece = parsed_fen[attacker[i]];
+      atk_piece = atk_piece === "p" ? "" : atk_piece.toLocaleUpperCase();
+      text += `<br>&bull; ${atk_piece}${attacker[i]} is ${
+        ["protecting", "attacking"][+(i === "0")]
+      } ${square[i]}.`;
     }
     text += "<br>The king has nowhere to run :(";
     el_explain.innerHTML = text;
@@ -61,7 +62,6 @@ const checkMate = () => {
 
 const setMate = (fen) => {
   document.getElementById("inp-fen").value = fen;
-  document.getElementById("inp-black").checked = true;
   checkMate();
 };
 
