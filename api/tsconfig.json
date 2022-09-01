@@ -1,0 +1,19 @@
+{
+  "compilerOptions": {
+    "outDir": "build",
+
+    "target": "esnext",
+    "module": "esnext",
+    "moduleResolution": "node",
+    "resolveJsonModule": true,
+    "esModuleInterop": true,
+    "allowSyntheticDefaultImports": true,
+
+    "allowJs": true,
+    // "checkJs": true,
+
+    "strict": true,
+    "skipDefaultLibCheck": true
+  },
+  "include": ["./src"]
+}

@@ -1,8 +1,16 @@
 import express from "express";
-import { $, _ } from "../src/mateFinder/constants.ts";
-import { findMate } from "../src/mateFinder/checker.ts";
+import path from "path";
+import { fileURLToPath } from "url";
+
+import { $, _ } from "./build/constants.js";
+import { findMate } from "./build/mate_finder.js";
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 const app = express();
+
+// app.use(express.static("publicex"));
 
 app.get("/", (req, res) => {
   const fen = req.query.fen;
@@ -77,9 +85,7 @@ app.get("/", (req, res) => {
     res.header("Content-Type", "image/svg+xml");
     res.send(svg);
   } else {
-    res.send(
-      "Sup! You can get the result by specify fen in the address. For example: <URL>/?fen=r1b3k1/pp4pp/2p1p3/3p4/2PPBPp1/2N1P2q/PP2QPK1/R5R1"
-    );
+    res.sendFile(path.join(__dirname, "public/index.html"));
   }
 });
 
