@@ -356,6 +356,7 @@ export const findMate = (fen: string) => {
     return [has_mate, squares_for_check, what_attack_these_squares, parsed_fen];
   }
   // Check for both black and white, check if black mate white first
+  parsed_fen._metadata.side = "w";
   let squares_for_check = getKingSquares(parsed_fen, true);
   let checChecker = checkScan(parsed_fen, true);
   let what_attack_these_squares = squares_for_check.map(checChecker);
@@ -364,6 +365,7 @@ export const findMate = (fen: string) => {
   if (has_mate)
     return [has_mate, squares_for_check, what_attack_these_squares, parsed_fen];
 
+  parsed_fen._metadata.side = "b";
   squares_for_check = getKingSquares(parsed_fen, false);
   checChecker = checkScan(parsed_fen, false);
   what_attack_these_squares = squares_for_check.map(checChecker);
