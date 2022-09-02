@@ -1,10 +1,94 @@
-<form>
-  <label>
-    FEN
-    <input type="text" name="fen">
-  </label>
-  <button type="submit">Why is this a mate?</button>
-  <label>
-    <input type="checkbox" name="flip" value=""> Black on bottom?
-  </label>
-</form>
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <!-- HTML Meta Tags -->
+  <title>Why is this a mate?</title>
+  <meta name="description" content="Input FEN and I'll tell you why it's a checkmate.">
+
+  <!-- Facebook Meta Tags -->
+  <meta property="og:url" content="https://whymate.glitch.me/">
+  <meta property="og:type" content="website">
+  <meta property="og:title" content="Why is this a mate?">
+  <meta property="og:description" content="Because this:">
+  <meta property="og:image"
+    content="https://whymate.glitch.me/?fen=rnbqkbnr%2Fpppppppp%2F8%2F8%2F8%2F8%2FPPPPPPPP%2FRNBQKBNR">
+
+  <!-- Twitter Meta Tags -->
+  <meta name="twitter:card" content="summary_large_image">
+  <meta property="twitter:domain" content="whymate.glitch.me">
+  <meta property="twitter:url" content="https://whymate.glitch.me/">
+  <meta name="twitter:title" content="Why is this a mate?">
+  <meta name="twitter:description" content="Because this:">
+  <meta name="twitter:image"
+    content="https://whymate.glitch.me/?fen=rnbqkbnr%2Fpppppppp%2F8%2F8%2F8%2F8%2FPPPPPPPP%2FRNBQKBNR">
+
+  <!-- Meta Tags Generated via https://www.opengraph.xyz -->
+
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/water.css@2/out/water.css">
+</head>
+
+<body>
+  <header>
+    <h1>Why is this a mate?</h1>
+    <p>Input FEN and I'll tell you why it's a checkmate.</p>
+  </header>
+  <hr>
+  <form class="fen-input">
+    <label>
+      FEN
+      <input type="text" name="fen">
+    </label>
+    <button type="submit">Tell me why</button>
+  </form>
+  <p>You can also try from these examples:</p>
+  <form>
+    <button type="submit" name="fen" value="1R2k3/R7/8/8/8/8/4K3/8 b">
+      Ladder Mate
+    </button>
+    <button type="submit" name="fen" value="1R4k1/5ppp/8/8/8/8/5PPP/6K1 b">
+      Backrank Mate
+    </button>
+    <button type="submit" name="fen" value="1kr5/QppKP3/8/8/8/4B3/8/8 b">
+      Damiano's Bishop Mate
+    </button>
+    <button type="submit" name="fen" value="5k2/5Q2/5K2/8/8/8/8/8 b">
+      Queen Mate
+    </button>
+    <button type="submit" name="fen" value="1k1R4/8/1K6/8/8/8/8/8 b">
+      Rook Mate
+    </button>
+    <button type="submit" name="fen" value="kr6/ppN5/8/1K6/8/8/8/8 b">
+      Smothered Mate
+    </button>
+  </form>
+
+  <style>
+    .fen-input {
+      display: flex;
+      align-items: flex-end;
+
+      gap: 8px;
+    }
+
+    .fen-input>label {
+      flex: 1;
+    }
+
+    .fen-input>label>input {
+      box-sizing: border-box;
+      width: 100%;
+      margin-top: 4px;
+    }
+
+    .fen-input>button {
+      margin-bottom: 10px;
+    }
+  </style>
+</body>
+
+</html>

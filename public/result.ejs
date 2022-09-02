@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <!-- HTML Meta Tags -->
+  <title>Why is this a mate?</title>
+  <meta name="description" content="Because this:">
+
+  <!-- Facebook Meta Tags -->
+  <meta property="og:url" content="https://whymate.glitch.me/">
+  <meta property="og:type" content="website">
+  <meta property="og:title" content="Why is this a mate?">
+  <meta property="og:description" content="Because this:">
+  <meta property="og:image"
+    content="https://whymate.glitch.me/?fen=<%= fen %><%= flip ? '&flip' : '' %>&img&og">
+
+  <!-- Twitter Meta Tags -->
+  <meta name="twitter:card" content="summary_large_image">
+  <meta property="twitter:domain" content="whymate.glitch.me">
+  <meta property="twitter:url" content="https://whymate.glitch.me/">
+  <meta name="twitter:title" content="Why is this a mate?">
+  <meta name="twitter:description" content="Because this:">
+  <meta name="twitter:image"
+    content="https://whymate.glitch.me/?fen=<%= fen %><%= flip ? '&flip' : '' %>&img&og">
+
+  <!-- Meta Tags Generated via https://www.opengraph.xyz -->
+
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/water.css@2/out/water.css">
+</head>
+
+<body>
+  <header>
+    <h1>Because this:</h1>
+    <button type="button" onclick="location.href='/'">
+      🏠&#xFE0F; Home
+    </button>
+    <button type="button" onclick="copylink()">
+      🔗&#xFE0F; Copy link
+    </button>
+    <button type="button" onclick="flipboard()">
+      🔄&#xFE0F; Flip board
+    </button>
+  </header>
+  <img id="img" src="/?fen=<%= fen %><%= flip ? '&flip' : '' %>&img" alt="">
+
+  <script>
+    const copylink = () => {
+      navigator.clipboard.writeText(location.href)
+    }
+
+    const flipboard = () => {
+      const params = new URLSearchParams(location.search)
+      if (params.has('flip')) { params.delete('flip') }
+      else { params.set('flip', '') }
+      location.search = params.toString();
+    }
+  </script>
+  <style>
+    header {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 8px;
+    }
+
+    header>h1 {
+      flex: 1;
+      line-height: 1;
+      margin: 0;
+    }
+  </style>
+</body>
+
+</html>
