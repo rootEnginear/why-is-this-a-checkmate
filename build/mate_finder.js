@@ -20,25 +20,25 @@ const isAtBoardEdge = (square) => square.includes("a") ? "left" : square.include
 const transpileFen = (fen) => {
     const [raw_ranks, side] = fen.split(" ");
     const ranks = raw_ranks.replace(/\d/g, (e) => "-".repeat(+e)).replace(/\//g, "");
-    if (ranks.length < 64)
-        throw new Error(`FEN is not complete. Expect 64 squares but found ${ranks.length}`);
+    if (ranks.length !== 64)
+        throw new Error(`FEN is not valid. Expect 64 squares but found ${ranks.length}`);
     const board = {
         _metadata: { K: undefined, k: undefined, fen, pieces: [], side },
         get at() {
             return (n) => this[(0, constants_1._)(n)];
         },
     };
-    for (const square_index in [...ranks]) {
-        const piece = ranks[square_index];
+    for (let i = 0; i < 64; i++) {
+        const piece = ranks[i];
         if (piece === "-")
             continue;
-        board[(0, constants_1._)(+square_index) ?? "a1"] = ranks[square_index];
+        board[(0, constants_1._)(i) ?? "a1"] = ranks[i];
         if (!board._metadata.pieces.includes(piece)) {
             board._metadata.pieces.push(piece);
             if (piece === "k")
-                board._metadata.k = (0, constants_1._)(+square_index);
+                board._metadata.k = (0, constants_1._)(i);
             else if (piece === "K")
-                board._metadata.K = (0, constants_1._)(+square_index);
+                board._metadata.K = (0, constants_1._)(i);
         }
     }
     if (!board._metadata.K)
@@ -83,8 +83,6 @@ exports.renderBoard = renderBoard;
  */
 const getKingSquares = (boardData, atWhiteKing = true) => {
     const king_square = boardData._metadata[atWhiteKing ? "K" : "k"];
-    if (!king_square)
-        throw new Error("King not found!");
     const square_index = (0, constants_1.$)(king_square);
     const prohibited_file = king_square.includes("a")
         ? "h"
