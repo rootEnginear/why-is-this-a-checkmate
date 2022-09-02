@@ -9,6 +9,11 @@ const app = express();
 app.set("view engine", "ejs");
 app.set("views", path.join(__dirname, "public"));
 
+app.get("/:a/:b/:c/:d/:e/:f/:g/:h", (req, res) => {
+  const { a, b, c, d, e, f, g, h } = req.params;
+  res.redirect(`/?fen=${[a, b, c, d, e, f, g, h].join("/")}`);
+});
+
 app.get("/", (req, res) => {
   const fen = req.query.fen;
   const img = "img" in req.query;
