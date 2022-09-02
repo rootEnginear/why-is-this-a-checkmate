@@ -1,4 +1,8 @@
-export const SQUARES = [
+export type Files = "a" | "b" | "c" | "d" | "e" | "f" | "g" | "h";
+export type Ranks = 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8;
+export type LegitSquare = `${Files}${Ranks}`;
+
+const SQUARES: LegitSquare[] = [
   "a8",
   "b8",
   "c8",
@@ -65,5 +69,12 @@ export const SQUARES = [
   "h1",
 ];
 
-export const _ = (n) => SQUARES[n];
-export const $ = (n) => SQUARES.indexOf(n);
+/**
+ * _
+ *
+ * also return undefined when out of range but im tired of typescript naive-ness
+ * @param n number
+ * @returns LegitSquare | undefined
+ */
+export const _ = (n: number): LegitSquare => SQUARES[n];
+export const $ = (n: LegitSquare) => SQUARES.indexOf(n);

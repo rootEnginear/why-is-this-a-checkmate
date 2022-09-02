@@ -1,49 +1,85 @@
-import { _, $ } from "./constants.js";
+import { _, $ } from "./constants";
+import type { LegitSquare } from "./constants";
 
-const isWhite = (piece) => /[A-Z]/.test(piece);
+export type BlackPieces = "p" | "r" | "n" | "b" | "q" | "k";
+export type WhitePieces = Uppercase<BlackPieces>;
+export type Pieces = BlackPieces | WhitePieces;
 
-const isOccupiedBySamePieceColor = (piece, white = true) => {
-  if (!piece) return false;
-  return isWhite(piece) === white;
+export type BoardLocation = Partial<Record<LegitSquare, Pieces>>;
+export type BoardData = BoardLocation & {
+  _metadata: {
+    K: LegitSquare;
+    k: LegitSquare;
+    fen: string;
+    pieces: Pieces[];
+    side: string;
+  };
+  readonly at: (n: number) => Pieces | undefined;
+};
+export type LooseBoardData = Omit<BoardData, "_metadata"> & {
+  _metadata: {
+    K: LegitSquare | undefined;
+    k: LegitSquare | undefined;
+    fen: string;
+    pieces: Pieces[];
+    side: string;
+  };
 };
 
-const isAtBoardEdge = (square) =>
+const isWhite = (piece: Pieces) => /[A-Z]/.test(piece);
+
+const isOccupiedBySamePieceColor = (piece: Pieces | undefined, whitePiece = true) => {
+  if (!piece) return false;
+  return isWhite(piece) === whitePiece;
+};
+
+const isAtBoardEdge = (square: LegitSquare) =>
   square.includes("a") ? "left" : square.includes("h") ? "right" : false;
 
 /**
  * transpileFen
- * @param {string} fen FEN, might be valid or invalid but must have 7 '/'
- * @returns {BoardData}
+ * --------------------------------------------------
+ * Transpile FEN into BoardData
+ *
+ * @param {string} fen
+ * @returns BoardData
  */
-const transpileFen = (fen) => {
-  const ranks = fen
-    .split(" ")[0]
-    .replace(/\d/g, (e) => "-".repeat(+e))
-    .replace(/\//g, "");
-  if (ranks.length < 64)
-    throw new Error(`FEN is not complete. Expect 64 squares but found ${ranks.length}`);
+const transpileFen = (fen: string) => {
+  const [raw_ranks, side] = fen.split(" ");
+  const ranks = raw_ranks.replace(/\d/g, (e) => "-".repeat(+e)).replace(/\//g, "");
+  if (ranks.length !== 64)
+    throw new Error(`FEN is not valid. Expect 64 squares but found ${ranks.length}`);
 
-  const board = {
-    _metadata: { K: null, k: null },
+  const board: LooseBoardData = {
+    _metadata: { K: undefined, k: undefined, fen, pieces: [] as Pieces[], side },
     get at() {
-      return (n) => this[_(n)];
+      return (n: number) => this[_(n)];
     },
   };
-  for (const square_index in ranks) {
-    const piece = ranks[square_index];
+  for (let i = 0; i < 64; i++) {
+    const piece = ranks[i] as Pieces | "-";
     if (piece === "-") continue;
-    board[_(square_index)] = ranks[square_index];
-    if (piece === "k") board._metadata.k = _(square_index);
-    else if (piece === "K") board._metadata.K = _(square_index);
+    board[_(i) ?? "a1"] = ranks[i] as Pieces;
+    if (!board._metadata.pieces.includes(piece)) {
+      board._metadata.pieces.push(piece);
+      if (piece === "k") board._metadata.k = _(i);
+      else if (piece === "K") board._metadata.K = _(i);
+    }
   }
-  return board;
+  if (!board._metadata.K) throw new Error("White king not found!");
+  if (!board._metadata.k) throw new Error("Black king not found!");
+  return board as BoardData;
 };
 
 /**
  * renderBoard
+ * --------------------------------------------------
+ * Render Board in console.
+ *
  * @param {BoardData} boardData
+ * @returns string
  */
-const renderBoard = (boardData) => {
+export const renderBoard = (boardData: BoardData) => {
   let board_string = "";
   for (let i = 0; i < 64; ) {
     const data = boardData.at(i);
@@ -57,17 +93,17 @@ const renderBoard = (boardData) => {
 };
 
 /**
- * getPossibleSquareAroundKing
+ * getKingSquares
  * --------------------------------------------------
- * Possible Square = empty OR has a enemy piece placed on it INCLUDES the king.
+ * Get an empty OR a square that an enemy piece is placed on it INCLUDING the king.
  * This will be for to checkscan.
  *
  * @param {BoardData} boardData
- * @param {boolean} white
- * @returns square around the king as an array
+ * @param {boolean} atWhiteKing
+ * @returns LegitSquare[]
  */
-const getPossibleSquareAtKing = (boardData, white = true) => {
-  const king_square = boardData._metadata[white ? "K" : "k"];
+const getKingSquares = (boardData: BoardData, atWhiteKing = true) => {
+  const king_square = boardData._metadata[atWhiteKing ? "K" : "k"];
   const square_index = $(king_square);
   const prohibited_file = king_square.includes("a")
     ? "h"
@@ -86,29 +122,43 @@ const getPossibleSquareAtKing = (boardData, white = true) => {
     square_index + 8 + 1,
   ]
     .map((s) => _(s))
-    .filter((s) => s && !s.includes(prohibited_file))
     .filter(
-      (s) => /[kK]/.test(boardData[s]) || !isOccupiedBySamePieceColor(boardData[s], white)
+      (s): s is Exclude<typeof s, undefined> =>
+        (s && !s.includes(prohibited_file)) || false
+    )
+    .filter(
+      (s) =>
+        /[kK]/.test(boardData[s] ?? "") ||
+        !isOccupiedBySamePieceColor(boardData[s], atWhiteKing)
     );
 };
 
-const calcSquareTilLeftRight = (square_name) => {
+const calcLeftRightSpace = (square_name: LegitSquare) => {
   const [file] = square_name;
   const til_left = file.charCodeAt(0) - 97;
   const til_right = 7 - til_left;
   return [til_left, til_right];
 };
 
-const whatIsCheckingThisSquare =
-  (boardData, white = true) =>
-  (square_name) => {
-    const k = white ? "K" : "k";
+/**
+ * checkScan
+ * --------------------------------------------------
+ * Scan for the attacker on a particular square.
+ *
+ * @param {BoardData} boardData
+ * @param {boolean} [checkWhite]
+ * @returns
+ */
+const checkScan =
+  (boardData: BoardData, checkWhite = true) =>
+  (square_name: LegitSquare) => {
+    const k = checkWhite ? "K" : "k";
     const is_king_at_board_edge = isAtBoardEdge(square_name);
-    const [sq_til_left, sq_til_right] = calcSquareTilLeftRight(square_name);
+    const [sq_til_left, sq_til_right] = calcLeftRightSpace(square_name);
     const si = $(square_name);
     // 1. Check pawn
-    let checking_piece = white ? "p" : "P";
-    if (white) {
+    let checking_piece: string | RegExp = checkWhite ? "p" : "P";
+    if (checkWhite) {
       // check for black pawn
       if (is_king_at_board_edge !== "left" && boardData.at(si - 8 - 1) === checking_piece)
         return _(si - 8 - 1);
@@ -128,7 +178,7 @@ const whatIsCheckingThisSquare =
         return _(si + 8 + 1);
     }
     // 2. Check sneaky horsey
-    checking_piece = white ? "n" : "N";
+    checking_piece = checkWhite ? "n" : "N";
     if (is_king_at_board_edge !== "left") {
       if (boardData.at(si - 16 - 1) === checking_piece) return _(si - 16 - 1);
       if (boardData.at(si - 8 - 2) === checking_piece) return _(si - 8 - 2);
@@ -142,7 +192,7 @@ const whatIsCheckingThisSquare =
       if (boardData.at(si + 16 + 1) === checking_piece) return _(si + 16 + 1);
     }
     // 3. Check "strong" king
-    checking_piece = white ? "k" : "K";
+    checking_piece = checkWhite ? "k" : "K";
     if (boardData.at(si - 8) === checking_piece) return _(si - 8);
     if (boardData.at(si + 8) === checking_piece) return _(si + 8);
     if (is_king_at_board_edge !== "left") {
@@ -156,7 +206,7 @@ const whatIsCheckingThisSquare =
       if (boardData.at(si + 8 + 1) === checking_piece) return _(si + 8 + 1);
     }
     // 4. Check sniper bishop
-    checking_piece = white ? /[bq]/ : /[BQ]/;
+    checking_piece = checkWhite ? /[bq]/ : /[BQ]/;
     let walkTop = 1,
       walkLeft = 1,
       walkRight = 1,
@@ -172,7 +222,7 @@ const whatIsCheckingThisSquare =
             if (walkLeft > sq_til_left) walkLeft = 0;
             else {
               temp_si2 = temp_si - walkLeft;
-              if (checking_piece.test(boardData.at(temp_si2))) return _(temp_si2);
+              if (checking_piece.test(boardData.at(temp_si2) ?? "")) return _(temp_si2);
               else if (
                 boardData.at(temp_si2) === undefined ||
                 boardData.at(temp_si2) === k
@@ -185,7 +235,7 @@ const whatIsCheckingThisSquare =
             if (walkRight > sq_til_right) walkRight = 0;
             else {
               temp_si2 = temp_si + walkRight;
-              if (checking_piece.test(boardData.at(temp_si2))) return _(temp_si2);
+              if (checking_piece.test(boardData.at(temp_si2) ?? "")) return _(temp_si2);
               else if (
                 boardData.at(temp_si2) === undefined ||
                 boardData.at(temp_si2) === k
@@ -208,7 +258,7 @@ const whatIsCheckingThisSquare =
             if (walkLeft > sq_til_left) walkLeft = 0;
             else {
               temp_si2 = temp_si - walkLeft;
-              if (checking_piece.test(boardData.at(temp_si2))) return _(temp_si2);
+              if (checking_piece.test(boardData.at(temp_si2) ?? "")) return _(temp_si2);
               else if (
                 boardData.at(temp_si2) === undefined ||
                 boardData.at(temp_si2) === k
@@ -221,7 +271,7 @@ const whatIsCheckingThisSquare =
             if (walkRight > sq_til_right) walkRight = 0;
             else {
               temp_si2 = temp_si + walkRight;
-              if (checking_piece.test(boardData.at(temp_si2))) return _(temp_si2);
+              if (checking_piece.test(boardData.at(temp_si2) ?? "")) return _(temp_si2);
               else if (
                 boardData.at(temp_si2) === undefined ||
                 boardData.at(temp_si2) === k
@@ -234,14 +284,14 @@ const whatIsCheckingThisSquare =
       }
     }
     // 5. Check rook
-    checking_piece = white ? /[rq]/ : /[RQ]/;
+    checking_piece = checkWhite ? /[rq]/ : /[RQ]/;
     walkTop = walkLeft = walkRight = walkBottom = 1;
     while (walkTop + walkLeft + walkRight + walkBottom !== 0) {
       if (walkTop) {
         temp_si = si - walkTop * 8;
         if (temp_si < 0) walkTop = 0;
         else {
-          if (checking_piece.test(boardData.at(temp_si))) return _(temp_si);
+          if (checking_piece.test(boardData.at(temp_si) ?? "")) return _(temp_si);
           else if (boardData.at(temp_si) === undefined || boardData.at(temp_si) === k)
             walkTop++;
           else walkTop = 0;
@@ -251,7 +301,7 @@ const whatIsCheckingThisSquare =
         if (walkLeft > sq_til_left) walkLeft = 0;
         else {
           temp_si = si - walkLeft;
-          if (checking_piece.test(boardData.at(temp_si))) return _(temp_si);
+          if (checking_piece.test(boardData.at(temp_si) ?? "")) return _(temp_si);
           else if (boardData.at(temp_si) === undefined || boardData.at(temp_si) === k)
             walkLeft++;
           else walkLeft = 0;
@@ -261,7 +311,7 @@ const whatIsCheckingThisSquare =
         if (walkRight > sq_til_right) walkRight = 0;
         else {
           temp_si = si + walkRight;
-          if (checking_piece.test(boardData.at(temp_si))) return _(temp_si);
+          if (checking_piece.test(boardData.at(temp_si) ?? "")) return _(temp_si);
           else if (boardData.at(temp_si) === undefined || boardData.at(temp_si) === k)
             walkRight++;
           else walkRight = 0;
@@ -271,77 +321,53 @@ const whatIsCheckingThisSquare =
         temp_si = si + walkBottom * 8;
         if (temp_si > 63) walkBottom = 0;
         else {
-          if (checking_piece.test(boardData.at(temp_si))) return _(temp_si);
+          if (checking_piece.test(boardData.at(temp_si) ?? "")) return _(temp_si);
           else if (boardData.at(temp_si) === undefined || boardData.at(temp_si) === k)
             walkBottom++;
           else walkBottom = 0;
         }
       }
     }
+    return;
   };
 
-// const MATES = [
-//   {
-//     name: "start-pos",
-//     fen: "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1",
-//     mateWhiteKing: false,
-//   },
-//   { name: "ladder-mate", fen: "1R2k3/R7/8/8/8/8/4K3/8 b - - 0 1", mateWhiteKing: false },
-//   {
-//     name: "backrank-mate",
-//     fen: "k1R5/pp6/8/8/4K3/8/8/8 b - - 0 1",
-//     mateWhiteKing: false,
-//   },
-//   {
-//     name: "sniper-mate",
-//     fen: "1kr5/QppKP3/8/8/8/4B3/8/8 b - - 0 1",
-//     mateWhiteKing: false,
-//   },
-//   { name: "rookq-mate", fen: "5k2/1R3Q2/8/8/8/8/8/7K b - - 0 1", mateWhiteKing: false },
-//   { name: "rook-mate", fen: "1k1R4/8/1K6/8/8/8/8/8 b - - 0 1", mateWhiteKing: false },
-//   {
-//     name: "smothered-mate",
-//     fen: "kr6/ppN5/8/1K6/8/8/8/8 b - - 0 1",
-//     mateWhiteKing: false,
-//   },
-// ];
-
-export const whyIsItAMate = (fen, mateWhiteKing = false) => {
-  // console.log(fen);
-
+/**
+ * findMate
+ * --------------------------------------------------
+ * Find mate in specified FEN
+ *
+ * @param {string} fen FEN to parsed and find mate
+ * @returns [has_mate, squares_for_check, what_attack_these_squares, parsed_fen]
+ */
+export const findMate = (fen: string) => {
   const parsed_fen = transpileFen(fen);
-  // console.log(parsed_fen);
 
-  // renderBoard(parsed_fen);
+  const mate_side = parsed_fen._metadata.side;
 
-  const squares_for_check = getPossibleSquareAtKing(parsed_fen, mateWhiteKing);
-  const what_attack_these_squares = squares_for_check.map(
-    whatIsCheckingThisSquare(parsed_fen, mateWhiteKing)
-  );
+  if (["b", "w"].includes(mate_side)) {
+    const mate_white_king = mate_side === "w";
 
-  return [squares_for_check, what_attack_these_squares, parsed_fen];
+    const squares_for_check = getKingSquares(parsed_fen, mate_white_king);
+    const checChecker = checkScan(parsed_fen, mate_white_king);
+    const what_attack_these_squares = squares_for_check.map(checChecker);
 
-  // const color_str = mateWhiteKing ? "White" : "Black";
-  // if (!what_attack_these_squares.includes(undefined)) {
-  //   console.log(`This is a checkmate for ${color_str.toLocaleLowerCase()} king because:`);
-  //   for (const i in squares_for_check) {
-  //     console.log(
-  //       `— ${parsed_fen[what_attack_these_squares[i]].toLocaleUpperCase()}${
-  //         what_attack_these_squares[i]
-  //       } is attacking ${squares_for_check[i]}.`
-  //     );
-  //   }
-  //   console.log(`${color_str} king has nowhere to run.`);
-  // } else {
-  //   console.log("This is not a checkmate:");
-  //   for (const i in squares_for_check) {
-  //     if (!what_attack_these_squares[i]) {
-  //       console.log(`— ${squares_for_check[i].toLocaleUpperCase()} has no attacker.`);
-  //     }
-  //   }
-  //   console.log(`${color_str} king is safe.`);
-  // }
-  // console.log("--------------------------------------------------");
+    const has_mate = !what_attack_these_squares.includes(undefined);
+
+    return [has_mate, squares_for_check, what_attack_these_squares, parsed_fen];
+  }
+  // Check for both black and white, check if black mate white first
+  let squares_for_check = getKingSquares(parsed_fen, true);
+  let checChecker = checkScan(parsed_fen, true);
+  let what_attack_these_squares = squares_for_check.map(checChecker);
+  let has_mate = !what_attack_these_squares.includes(undefined);
+
+  if (has_mate)
+    return [has_mate, squares_for_check, what_attack_these_squares, parsed_fen];
+
+  squares_for_check = getKingSquares(parsed_fen, false);
+  checChecker = checkScan(parsed_fen, false);
+  what_attack_these_squares = squares_for_check.map(checChecker);
+  has_mate = !what_attack_these_squares.includes(undefined);
+
+  return [has_mate, squares_for_check, what_attack_these_squares, parsed_fen];
 };
-
-// MATES.forEach(({ fen, mateWhiteKing }) => whyIsItAMate(fen, mateWhiteKing));

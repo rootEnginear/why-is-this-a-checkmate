@@ -1,9 +1,9 @@
-name: Build Vite Pages
+name: Build From Source
 
 on:
   push:
     branches:
-      - main
+      - dev
 
 jobs:
   build:
@@ -17,10 +17,7 @@ jobs:
         run: |
           yarn
           yarn build
-      - name: Deploy
-        uses: s0/git-publish-subdir-action@v2.3.0
-        env:
-          REPO: self
-          BRANCH: gh-pages
-          FOLDER: dist
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - name: Commit Change
+        uses: stefanzweifel/git-auto-commit-action@v4
+        with:
+          branch: main
