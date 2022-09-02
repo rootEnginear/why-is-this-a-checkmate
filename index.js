@@ -1,5 +1,6 @@
 const express = require("express");
 const path = require("path");
+const sharp = require("sharp");
 
 const { $, _ } = require("./build/constants.js");
 const { findMate } = require("./build/mate_finder.js");
@@ -24,13 +25,13 @@ app.get("/", (req, res) => {
   if (!img) return res.render("result", { fen: encodeURIComponent(fen), flip });
 
   const [has_mate, check_squares, attacker, parsed_fen] = findMate(fen);
-  const { pieces } = parsed_fen._metadata;
+  const { pieces, side } = parsed_fen._metadata;
 
   const check_squares_id = check_squares.map($);
   const attacker_id = attacker.map($);
 
-  const c = (i) => (flip ? 63 - i : i);
-  const dimension = og ? "-276 -50 952 500" : "0 0 400 400";
+  const c = (i) => (flip ^ (side === "w") ? 63 - i : i);
+  const dimension = og ? "-181 0 762 400" : "0 0 400 400";
 
   let svg = `<svg viewBox="${dimension}" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"><defs>`;
 
@@ -91,8 +92,19 @@ app.get("/", (req, res) => {
 
   svg += "</svg>";
 
-  res.header("Content-Type", "image/svg+xml");
-  return res.send(svg);
+  if (og) {
+    sharp(Buffer.from(svg))
+      .png()
+      .flatten({ background: "#ffd" })
+      .toBuffer()
+      .then((og_img) => {
+        res.header("Content-Type", "image/png");
+        return res.end(og_img);
+      });
+  } else {
+    res.header("Content-Type", "image/svg+xml");
+    return res.send(svg);
+  }
 });
 
 const port = process.env.PORT ?? 3000;
