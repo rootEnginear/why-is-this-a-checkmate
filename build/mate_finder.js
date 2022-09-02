@@ -1,4 +1,7 @@
-import { _, $ } from "./constants.js";
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.findMate = exports.renderBoard = void 0;
+const constants_1 = require("./constants");
 const isWhite = (piece) => /[A-Z]/.test(piece);
 const isOccupiedBySamePieceColor = (piece, whitePiece = true) => {
     if (!piece)
@@ -22,20 +25,20 @@ const transpileFen = (fen) => {
     const board = {
         _metadata: { K: undefined, k: undefined, fen, pieces: [], side },
         get at() {
-            return (n) => this[_(n)];
+            return (n) => this[(0, constants_1._)(n)];
         },
     };
     for (const square_index in [...ranks]) {
         const piece = ranks[square_index];
         if (piece === "-")
             continue;
-        board[_(+square_index) ?? "a1"] = ranks[square_index];
+        board[(0, constants_1._)(+square_index) ?? "a1"] = ranks[square_index];
         if (!board._metadata.pieces.includes(piece)) {
             board._metadata.pieces.push(piece);
             if (piece === "k")
-                board._metadata.k = _(+square_index);
+                board._metadata.k = (0, constants_1._)(+square_index);
             else if (piece === "K")
-                board._metadata.K = _(+square_index);
+                board._metadata.K = (0, constants_1._)(+square_index);
         }
     }
     if (!board._metadata.K)
@@ -52,7 +55,7 @@ const transpileFen = (fen) => {
  * @param {BoardData} boardData
  * @returns string
  */
-export const renderBoard = (boardData) => {
+const renderBoard = (boardData) => {
     let board_string = "";
     for (let i = 0; i < 64;) {
         const data = boardData.at(i);
@@ -67,6 +70,7 @@ export const renderBoard = (boardData) => {
     console.log(board_string);
     return board_string;
 };
+exports.renderBoard = renderBoard;
 /**
  * getKingSquares
  * --------------------------------------------------
@@ -81,7 +85,7 @@ const getKingSquares = (boardData, atWhiteKing = true) => {
     const king_square = boardData._metadata[atWhiteKing ? "K" : "k"];
     if (!king_square)
         throw new Error("King not found!");
-    const square_index = $(king_square);
+    const square_index = (0, constants_1.$)(king_square);
     const prohibited_file = king_square.includes("a")
         ? "h"
         : king_square.includes("h")
@@ -98,7 +102,7 @@ const getKingSquares = (boardData, atWhiteKing = true) => {
         square_index + 8,
         square_index + 8 + 1,
     ]
-        .map((s) => _(s))
+        .map((s) => (0, constants_1._)(s))
         .filter((s) => (s && !s.includes(prohibited_file)) || false)
         .filter((s) => /[kK]/.test(boardData[s] ?? "") ||
         !isOccupiedBySamePieceColor(boardData[s], atWhiteKing));
@@ -122,68 +126,68 @@ const checkScan = (boardData, checkWhite = true) => (square_name) => {
     const k = checkWhite ? "K" : "k";
     const is_king_at_board_edge = isAtBoardEdge(square_name);
     const [sq_til_left, sq_til_right] = calcLeftRightSpace(square_name);
-    const si = $(square_name);
+    const si = (0, constants_1.$)(square_name);
     // 1. Check pawn
     let checking_piece = checkWhite ? "p" : "P";
     if (checkWhite) {
         // check for black pawn
         if (is_king_at_board_edge !== "left" && boardData.at(si - 8 - 1) === checking_piece)
-            return _(si - 8 - 1);
+            return (0, constants_1._)(si - 8 - 1);
         if (is_king_at_board_edge !== "right" &&
             boardData.at(si - 8 + 1) === checking_piece)
-            return _(si - 8 + 1);
+            return (0, constants_1._)(si - 8 + 1);
     }
     else {
         // check for white pawn
         if (is_king_at_board_edge !== "left" && boardData.at(si + 8 - 1) === checking_piece)
-            return _(si + 8 - 1);
+            return (0, constants_1._)(si + 8 - 1);
         if (is_king_at_board_edge !== "right" &&
             boardData.at(si + 8 + 1) === checking_piece)
-            return _(si + 8 + 1);
+            return (0, constants_1._)(si + 8 + 1);
     }
     // 2. Check sneaky horsey
     checking_piece = checkWhite ? "n" : "N";
     if (is_king_at_board_edge !== "left") {
         if (boardData.at(si - 16 - 1) === checking_piece)
-            return _(si - 16 - 1);
+            return (0, constants_1._)(si - 16 - 1);
         if (boardData.at(si - 8 - 2) === checking_piece)
-            return _(si - 8 - 2);
+            return (0, constants_1._)(si - 8 - 2);
         if (boardData.at(si + 8 - 2) === checking_piece)
-            return _(si + 8 - 2);
+            return (0, constants_1._)(si + 8 - 2);
         if (boardData.at(si + 16 - 1) === checking_piece)
-            return _(si + 16 - 1);
+            return (0, constants_1._)(si + 16 - 1);
     }
     if (is_king_at_board_edge !== "right") {
         if (boardData.at(si - 16 + 1) === checking_piece)
-            return _(si - 16 + 1);
+            return (0, constants_1._)(si - 16 + 1);
         if (boardData.at(si - 8 + 2) === checking_piece)
-            return _(si - 8 + 2);
+            return (0, constants_1._)(si - 8 + 2);
         if (boardData.at(si + 8 + 2) === checking_piece)
-            return _(si + 8 + 2);
+            return (0, constants_1._)(si + 8 + 2);
         if (boardData.at(si + 16 + 1) === checking_piece)
-            return _(si + 16 + 1);
+            return (0, constants_1._)(si + 16 + 1);
     }
     // 3. Check "strong" king
     checking_piece = checkWhite ? "k" : "K";
     if (boardData.at(si - 8) === checking_piece)
-        return _(si - 8);
+        return (0, constants_1._)(si - 8);
     if (boardData.at(si + 8) === checking_piece)
-        return _(si + 8);
+        return (0, constants_1._)(si + 8);
     if (is_king_at_board_edge !== "left") {
         if (boardData.at(si - 8 - 1) === checking_piece)
-            return _(si - 8 - 1);
+            return (0, constants_1._)(si - 8 - 1);
         if (boardData.at(si - 1) === checking_piece)
-            return _(si - 1);
+            return (0, constants_1._)(si - 1);
         if (boardData.at(si + 8 - 1) === checking_piece)
-            return _(si + 8 - 1);
+            return (0, constants_1._)(si + 8 - 1);
     }
     if (is_king_at_board_edge !== "right") {
         if (boardData.at(si - 8 + 1) === checking_piece)
-            return _(si - 8 + 1);
+            return (0, constants_1._)(si - 8 + 1);
         if (boardData.at(si + 1) === checking_piece)
-            return _(si + 1);
+            return (0, constants_1._)(si + 1);
         if (boardData.at(si + 8 + 1) === checking_piece)
-            return _(si + 8 + 1);
+            return (0, constants_1._)(si + 8 + 1);
     }
     // 4. Check sniper bishop
     checking_piece = checkWhite ? /[bq]/ : /[BQ]/;
@@ -202,7 +206,7 @@ const checkScan = (boardData, checkWhite = true) => (square_name) => {
                     else {
                         temp_si2 = temp_si - walkLeft;
                         if (checking_piece.test(boardData.at(temp_si2) ?? ""))
-                            return _(temp_si2);
+                            return (0, constants_1._)(temp_si2);
                         else if (boardData.at(temp_si2) === undefined ||
                             boardData.at(temp_si2) === k)
                             walkLeft++;
@@ -216,7 +220,7 @@ const checkScan = (boardData, checkWhite = true) => (square_name) => {
                     else {
                         temp_si2 = temp_si + walkRight;
                         if (checking_piece.test(boardData.at(temp_si2) ?? ""))
-                            return _(temp_si2);
+                            return (0, constants_1._)(temp_si2);
                         else if (boardData.at(temp_si2) === undefined ||
                             boardData.at(temp_si2) === k)
                             walkRight++;
@@ -241,7 +245,7 @@ const checkScan = (boardData, checkWhite = true) => (square_name) => {
                     else {
                         temp_si2 = temp_si - walkLeft;
                         if (checking_piece.test(boardData.at(temp_si2) ?? ""))
-                            return _(temp_si2);
+                            return (0, constants_1._)(temp_si2);
                         else if (boardData.at(temp_si2) === undefined ||
                             boardData.at(temp_si2) === k)
                             walkLeft++;
@@ -255,7 +259,7 @@ const checkScan = (boardData, checkWhite = true) => (square_name) => {
                     else {
                         temp_si2 = temp_si + walkRight;
                         if (checking_piece.test(boardData.at(temp_si2) ?? ""))
-                            return _(temp_si2);
+                            return (0, constants_1._)(temp_si2);
                         else if (boardData.at(temp_si2) === undefined ||
                             boardData.at(temp_si2) === k)
                             walkRight++;
@@ -276,7 +280,7 @@ const checkScan = (boardData, checkWhite = true) => (square_name) => {
                 walkTop = 0;
             else {
                 if (checking_piece.test(boardData.at(temp_si) ?? ""))
-                    return _(temp_si);
+                    return (0, constants_1._)(temp_si);
                 else if (boardData.at(temp_si) === undefined || boardData.at(temp_si) === k)
                     walkTop++;
                 else
@@ -289,7 +293,7 @@ const checkScan = (boardData, checkWhite = true) => (square_name) => {
             else {
                 temp_si = si - walkLeft;
                 if (checking_piece.test(boardData.at(temp_si) ?? ""))
-                    return _(temp_si);
+                    return (0, constants_1._)(temp_si);
                 else if (boardData.at(temp_si) === undefined || boardData.at(temp_si) === k)
                     walkLeft++;
                 else
@@ -302,7 +306,7 @@ const checkScan = (boardData, checkWhite = true) => (square_name) => {
             else {
                 temp_si = si + walkRight;
                 if (checking_piece.test(boardData.at(temp_si) ?? ""))
-                    return _(temp_si);
+                    return (0, constants_1._)(temp_si);
                 else if (boardData.at(temp_si) === undefined || boardData.at(temp_si) === k)
                     walkRight++;
                 else
@@ -315,7 +319,7 @@ const checkScan = (boardData, checkWhite = true) => (square_name) => {
                 walkBottom = 0;
             else {
                 if (checking_piece.test(boardData.at(temp_si) ?? ""))
-                    return _(temp_si);
+                    return (0, constants_1._)(temp_si);
                 else if (boardData.at(temp_si) === undefined || boardData.at(temp_si) === k)
                     walkBottom++;
                 else
@@ -333,7 +337,7 @@ const checkScan = (boardData, checkWhite = true) => (square_name) => {
  * @param {string} fen FEN to parsed and find mate
  * @returns [has_mate, squares_for_check, what_attack_these_squares, parsed_fen]
  */
-export const findMate = (fen) => {
+const findMate = (fen) => {
     const parsed_fen = transpileFen(fen);
     const mate_side = parsed_fen._metadata.side;
     if (["b", "w"].includes(mate_side)) {
@@ -357,3 +361,4 @@ export const findMate = (fen) => {
     has_mate = !what_attack_these_squares.includes(undefined);
     return [has_mate, squares_for_check, what_attack_these_squares, parsed_fen];
 };
+exports.findMate = findMate;

@@ -1,16 +1,10 @@
-import express from "express";
-import path from "path";
-import { fileURLToPath } from "url";
+const express = require("express");
+const path = require("path");
 
-import { $, _ } from "./build/constants.js";
-import { findMate } from "./build/mate_finder.js";
-
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
+const { $, _ } = require("./build/constants.js");
+const { findMate } = require("./build/mate_finder.js");
 
 const app = express();
-
-// app.use(express.static("publicex"));
 
 app.get("/", (req, res) => {
   const fen = req.query.fen;
@@ -89,4 +83,9 @@ app.get("/", (req, res) => {
   }
 });
 
-app.listen(3000, () => console.log("Server running on http://localhost:3000/"));
+const port = process.env.PORT ?? 3000;
+const listener = app.listen(port, () =>
+  console.log(
+    `Server is running on port ${listener.address().address}:${listener.address().port}`
+  )
+);

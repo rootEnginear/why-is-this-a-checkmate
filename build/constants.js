@@ -1,3 +1,6 @@
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.$ = exports._ = void 0;
 const SQUARES = [
     "a8",
     "b8",
@@ -71,5 +74,7 @@ const SQUARES = [
  * @param n number
  * @returns LegitSquare | undefined
  */
-export const _ = (n) => SQUARES[n];
-export const $ = (n) => SQUARES.indexOf(n);
+const _ = (n) => SQUARES[n];
+exports._ = _;
+const $ = (n) => SQUARES.indexOf(n);
+exports.$ = $;

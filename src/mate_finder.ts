@@ -5,16 +5,25 @@ export type BlackPieces = "p" | "r" | "n" | "b" | "q" | "k";
 export type WhitePieces = Uppercase<BlackPieces>;
 export type Pieces = BlackPieces | WhitePieces;
 
-export type BoardLocation = Partial<Record<LegitSquare, Pieces | undefined>>;
+export type BoardLocation = Partial<Record<LegitSquare, Pieces>>;
 export type BoardData = BoardLocation & {
   _metadata: {
-    K?: LegitSquare;
-    k?: LegitSquare;
+    K: LegitSquare;
+    k: LegitSquare;
     fen: string;
     pieces: Pieces[];
     side: string;
   };
   readonly at: (n: number) => Pieces | undefined;
+};
+export type LooseBoardData = Omit<BoardData, "_metadata"> & {
+  _metadata: {
+    K: LegitSquare | undefined;
+    k: LegitSquare | undefined;
+    fen: string;
+    pieces: Pieces[];
+    side: string;
+  };
 };
 
 const isWhite = (piece: Pieces) => /[A-Z]/.test(piece);
@@ -38,28 +47,28 @@ const isAtBoardEdge = (square: LegitSquare) =>
 const transpileFen = (fen: string) => {
   const [raw_ranks, side] = fen.split(" ");
   const ranks = raw_ranks.replace(/\d/g, (e) => "-".repeat(+e)).replace(/\//g, "");
-  if (ranks.length < 64)
-    throw new Error(`FEN is not complete. Expect 64 squares but found ${ranks.length}`);
+  if (ranks.length !== 64)
+    throw new Error(`FEN is not valid. Expect 64 squares but found ${ranks.length}`);
 
-  const board: BoardData = {
+  const board: LooseBoardData = {
     _metadata: { K: undefined, k: undefined, fen, pieces: [] as Pieces[], side },
     get at() {
       return (n: number) => this[_(n)];
     },
   };
-  for (const square_index in [...ranks]) {
-    const piece = ranks[square_index] as Pieces | "-";
+  for (let i = 0; i < 64; i++) {
+    const piece = ranks[i] as Pieces | "-";
     if (piece === "-") continue;
-    board[_(+square_index) ?? "a1"] = ranks[square_index] as Pieces;
+    board[_(i) ?? "a1"] = ranks[i] as Pieces;
     if (!board._metadata.pieces.includes(piece)) {
       board._metadata.pieces.push(piece);
-      if (piece === "k") board._metadata.k = _(+square_index);
-      else if (piece === "K") board._metadata.K = _(+square_index);
+      if (piece === "k") board._metadata.k = _(i);
+      else if (piece === "K") board._metadata.K = _(i);
     }
   }
   if (!board._metadata.K) throw new Error("White king not found!");
   if (!board._metadata.k) throw new Error("Black king not found!");
-  return board;
+  return board as BoardData;
 };
 
 /**
@@ -95,7 +104,6 @@ export const renderBoard = (boardData: BoardData) => {
  */
 const getKingSquares = (boardData: BoardData, atWhiteKing = true) => {
   const king_square = boardData._metadata[atWhiteKing ? "K" : "k"];
-  if (!king_square) throw new Error("King not found!");
   const square_index = $(king_square);
   const prohibited_file = king_square.includes("a")
     ? "h"
