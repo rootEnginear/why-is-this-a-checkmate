@@ -23,7 +23,7 @@ perform mate checking.
 GET /<FEN>
 ```
 
-Redirect to `GET /?fen=`. You may replace any spaces in FEN string with `+` for
+Redirect to `GET /?fen=<FEN>`. You may replace any spaces in FEN string with `+` for
 this syntax to work.
 
 Examples:
@@ -34,7 +34,7 @@ Examples:
 ---
 
 ```http
-GET /?fen=<FEN>
+GET /?fen=<FEN>[&flip][&img]
 ````
 
 Generate a page that shows why in that position (FEN) is a checkmate. This

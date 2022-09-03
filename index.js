@@ -21,7 +21,7 @@ app.get("/", (req, res) => {
   const flip = "flip" in req.query;
   const og = "og" in req.query;
 
-  if (!fen) return res.sendFile(path.join(__dirname, "public/index.html"));
+  if (!fen) return res.render("index");
   if (!img) return res.render("result", { fen: encodeURIComponent(fen), flip });
 
   const [has_mate, check_squares, attacker, parsed_fen] = findMate(fen);
