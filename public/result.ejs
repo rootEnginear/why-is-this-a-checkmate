@@ -30,8 +30,6 @@
     content="https://whymate.glitch.me/?fen=<%= fen %><%= flip ? '&flip' : '' %>&img&og">
 
   <!-- Meta Tags Generated via https://www.opengraph.xyz -->
-
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/water.css@2/out/water.css">
 </head>
 
 <body>
@@ -48,33 +46,41 @@
     </button>
   </header>
   <img id="img" src="/?fen=<%= fen %><%= flip ? '&flip' : '' %>&img" alt="">
+  <%- include('footer'); %>
 
-  <script>
-    const copylink = () => {
-      navigator.clipboard.writeText(location.href)
-    }
+    <script>
+      const copylink = () => {
+        navigator.clipboard.writeText(location.href)
+      }
 
-    const flipboard = () => {
-      const params = new URLSearchParams(location.search)
-      if (params.has('flip')) { params.delete('flip') }
-      else { params.set('flip', '') }
-      location.search = params.toString();
-    }
-  </script>
-  <style>
-    header {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      margin-bottom: 8px;
-    }
+      const flipboard = () => {
+        const params = new URLSearchParams(location.search)
+        if (params.has('flip')) { params.delete('flip') }
+        else { params.set('flip', '') }
+        location.search = params.toString();
+      }
+    </script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/water.css@2/out/water.css">
+    <style>
+      header {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        margin-bottom: 8px;
+      }
 
-    header>h1 {
-      flex: 1;
-      line-height: 1;
-      margin: 0;
-    }
-  </style>
+      header>h1 {
+        flex: 1;
+        line-height: 1;
+        margin: 0;
+      }
+
+      #img {
+        max-height: 80vh;
+        margin: auto;
+        display: block;
+      }
+    </style>
 </body>
 
 </html>

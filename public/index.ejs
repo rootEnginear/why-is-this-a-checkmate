@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <!-- HTML Meta Tags -->
+  <title>Why is this a mate?</title>
+  <meta name="description" content="Input FEN and I'll tell you why it's a checkmate.">
+
+  <!-- Facebook Meta Tags -->
+  <meta property="og:url" content="https://whymate.glitch.me/">
+  <meta property="og:type" content="website">
+  <meta property="og:title" content="Why is this a mate?">
+  <meta property="og:description"
+    content="Input FEN and I'll tell you why it's a checkmate.">
+  <meta property="og:image"
+    content="https://whymate.glitch.me/?fen=rnbqkbnr%2Fpppppppp%2F8%2F8%2F8%2F8%2FPPPPPPPP%2FRNBQKBNR&img&og">
+
+  <!-- Twitter Meta Tags -->
+  <meta name="twitter:card" content="summary_large_image">
+  <meta property="twitter:domain" content="whymate.glitch.me">
+  <meta property="twitter:url" content="https://whymate.glitch.me/">
+  <meta name="twitter:title" content="Why is this a mate?">
+  <meta name="twitter:description"
+    content="Input FEN and I'll tell you why it's a checkmate.">
+  <meta name="twitter:image"
+    content="https://whymate.glitch.me/?fen=rnbqkbnr%2Fpppppppp%2F8%2F8%2F8%2F8%2FPPPPPPPP%2FRNBQKBNR&img&og">
+
+  <!-- Meta Tags Generated via https://www.opengraph.xyz -->
+</head>
+
+<body>
+  <header>
+    <h1>Why is this a mate?</h1>
+    <p>Input FEN and I'll tell you why it's a checkmate.</p>
+  </header>
+  <hr>
+  <form class="fen-input">
+    <label>
+      FEN
+      <input type="text" name="fen"
+        placeholder="rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR">
+    </label>
+    <button type="submit">Tell me why</button>
+  </form>
+  <span>Examples:</span>
+  <ul>
+    <li>
+      <a href="/1R2k3/R7/8/8/8/8/4K3/8+b">
+        Ladder Mate — <code>/1R2k3/R7/8/8/8/8/4K3/8+b</code>
+      </a>
+    </li>
+    <li>
+      <a href="/1R4k1/5ppp/8/8/8/8/5PPP/6K1+b">
+        Backrank Mate — <code>/1R4k1/5ppp/8/8/8/8/5PPP/6K1+b</code>
+      </a>
+    </li>
+    <li>
+      <a href="/kr6/ppN5/8/1K6/8/8/8/8+b">
+        Smothered Mate — <code>/kr6/ppN5/8/1K6/8/8/8/8+b</code>
+      </a>
+    </li>
+  </ul>
+  <hr>
+  <h2>Shortcuts (aka Endpoints)</h2>
+  <pre><code>https://whymate.glitch.me/&lt;FEN&gt;</code></pre>
+  <p>
+    Redirect to <code>https://whymate.glitch.me/?fen=&lt;FEN&gt;</code>. You may replace
+    any spaces in FEN string with <code>+</code> for this syntax to work.
+  </p>
+  <span>Examples:</span>
+  <ul>
+    <li>
+      <code>https://whymate.glitch.me/1R4k1/5ppp/8/8/8/8/5PPP/6K1</code>
+    </li>
+    <li>
+      <code>https://whymate.glitch.me/5bk1/2p2p1p/6p1/nB2pb2/1K6/2P2N2/1P1N1PPP/r3R3+w</code>
+    </li>
+  </ul>
+  <hr>
+  <pre><code>https://whymate.glitch.me/?fen=&lt;FEN&gt;[&flip][&img]</code></pre>
+  <p>
+    Generate a page that shows why in that position (FEN) is a checkmate. This
+    <em>required</em> the first part of the FEN — which is the board configuration.
+  </p>
+  <p>
+    However, you can also specify the second part of the FEN too, which will help
+    the checker to only find mate in that color. This part can be either "w" or
+    "b". If it's "w", the checker will check if white is in a mate, and vise versa.
+    If the mate is not found, <em>currently</em>, it will just render the position for
+    you.
+  </p>
+  <span>Parameters:</span>
+  <ul>
+    <li>
+      <code>flip</code> : Show the board from the opposite perspective. Normally, if
+      white is mating black, it will show as white perspective (A file at the left, H file
+      at the right). But if black is mating white, it will show as black perspective (H
+      file at the left, A file at the right).
+    </li>
+    <li>
+      <code>img</code> : Generate an SVG image instead of a HTML page.
+    </li>
+  </ul>
+  <span>Examples:</span>
+  <ul>
+    <li>
+      <code>https://whymate.glitch.me/?fen=5bk1/2p2p1p/6p1/nB2pb2/1K6/2P2N2/1P1N1PPP/r3R3+w</code>
+    </li>
+    <li>
+      <code>https://whymate.glitch.me/?fen=kr6/ppN5/8/1K6/8/8/8/8+b&flip</code>
+    </li>
+    <li>
+      <code>https://whymate.glitch.me/?fen=5k2/5Q2/5K2/8/8/8/8/8+b&img</code>
+    </li>
+  </ul>
+  <h2>Resources</h2>
+  <ul>
+    <li>Chess Pieces: Maestro chess piece by sadsnake1</li>
+    <li>Board Theme: Green Plastic theme by the <a
+        rel="nofollow noopener noreferrer" target="_blank"
+        href="https://github.com/lichess-org/lila">lila authors</a> and <a
+        rel="nofollow noopener noreferrer" target="_blank"
+        href="https://lichess.org/@/pirouetti">pirouetti</a></li>
+  </ul>
+  <%- include('footer'); %>
+
+
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/water.css@2/out/water.css">
+    <style>
+      .fen-input {
+        display: flex;
+        align-items: flex-end;
+
+        gap: 8px;
+      }
+
+      .fen-input>label {
+        flex: 1;
+      }
+
+      .fen-input>label>input {
+        box-sizing: border-box;
+        width: 100%;
+        margin-top: 4px;
+      }
+
+      .fen-input>button {
+        margin-bottom: 10px;
+      }
+
+      ul {
+        margin-top: 0;
+      }
+    </style>
+</body>
+
+</html>
