@@ -22,9 +22,11 @@ app.get("/", (req, res) => {
   const og = "og" in req.query;
 
   if (!fen) return res.render("index");
-  if (!img) return res.render("result", { fen: encodeURIComponent(fen), flip });
 
   const [has_mate, check_squares, attacker, parsed_fen] = findMate(fen);
+
+  if (!img) return res.render("result", { fen: encodeURIComponent(fen), flip, has_mate });
+
   const { pieces, side } = parsed_fen._metadata;
 
   const check_squares_id = check_squares.map($);
