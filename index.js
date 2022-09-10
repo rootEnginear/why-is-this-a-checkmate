@@ -22,9 +22,11 @@ app.get("/", (req, res) => {
   const og = "og" in req.query;
 
   if (!fen) return res.render("index");
-  if (!img) return res.render("result", { fen: encodeURIComponent(fen), flip });
 
   const [has_mate, check_squares, attacker, parsed_fen] = findMate(fen);
+
+  if (!img) return res.render("result", { fen: encodeURIComponent(fen), flip, has_mate });
+
   const { pieces, side } = parsed_fen._metadata;
 
   const check_squares_id = check_squares.map($);
@@ -33,7 +35,7 @@ app.get("/", (req, res) => {
   const c = (i) => (flip ^ (side === "w") ? 63 - i : i);
   const dimension = og ? "-181 0 762 400" : "0 0 400 400";
 
-  let svg = `<svg viewBox="${dimension}" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"><defs>`;
+  let svg = `<svg viewBox="${dimension}" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"><style>text{font-family:Arial,sans-serif;fill:#59935d;font-size:12px}.l{fill:#f1f6b2}</style><defs>`;
 
   if (pieces.includes("b"))
     svg += `<g id="b" fill="none"><path fill-rule="evenodd" clip-rule="evenodd" d="M31.016 32.267L35.7419 26.3238L25.5519 13.3488H24.8511V13.3384H24.1401L13.9501 26.3134L18.676 32.2565L17.1332 37.1235C17.1021 37.5091 20.2283 39.1571 24.8464 39.1571C29.4642 39.1571 32.5915 37.509 32.5599 37.1235L31.016 32.267Z" fill="url(#paint0_linear_6_204)" stroke="black" stroke-linecap="round" /><path fill-rule="evenodd" clip-rule="evenodd" d="M24.8261 7.6979C23.2763 7.6979 22.0193 8.9369 22.0193 10.4653C22.0193 11.9937 23.2764 13.2325 24.8261 13.2325C26.3758 13.2325 27.6313 11.9931 27.6313 10.4653C27.6313 8.9372 26.3758 7.6981 24.8261 7.6979V7.6979Z" fill="url(#paint1_linear_6_204)" stroke="black" stroke-width="0.99998" stroke-linecap="round" stroke-linejoin="round" /><path d="M22.0961 24.66H27.5961M24.8461 21.9101V27.4101" stroke="black" stroke-linecap="round" stroke-linejoin="round" /><g opacity="0.2" filter="url(#filter0_f_6_204)"><path fill-rule="evenodd" clip-rule="evenodd" d="M24.8383 7.7169C28.3638 9.56943 25.3563 12.7559 23.2615 13.0362C23.7385 13.2374 24.2721 13.3537 24.8383 13.3537C30.5507 11.5554 26.2004 7.58567 24.8383 7.71687V7.7169ZM24.1275 13.3555C27.3223 17.5602 30.1705 21.9989 33.143 26.3416L28.1761 31.6541L29.3019 36.1732L32.4029 37.0546L31.0038 32.2839L35.7289 26.3415L25.5401 13.3667H24.8391V13.3558L24.1275 13.3555Z" fill="black" /></g><path opacity="0.15" fill-rule="evenodd" clip-rule="evenodd" d="M26.073 35.618C22.9858 35.6302 19.6757 36.1221 17.7042 37.3856C19.8856 38.8871 23.5025 39.2122 26.5892 39.1553C19.4495 37.7113 28.6192 36.1897 31.4333 36.1546C29.9109 35.7872 27.7237 35.6114 26.073 35.6181V35.618Z" fill="black" /><path d="M17.134 37.123C17.134 37.123 19.0586 35.5571 24.8479 35.5571C30.6372 35.5571 32.5608 37.123 32.5608 37.123" stroke="black" stroke-width="0.99998" /><path d="M18.676 32.256C18.676 32.256 20.539 31.2346 24.8512 31.2345C29.1634 31.2344 31.0263 32.256 31.0263 32.256" stroke="black" stroke-width="0.99998" /><g opacity="0.3" filter="url(#filter1_f_6_204)"><path fill-rule="evenodd" clip-rule="evenodd" d="M18.872 31.579C18.872 31.579 18.8745 31.587 18.872 31.579L14.7012 26.3202L24.4365 13.8892L16.3612 26.2742L18.872 31.579Z" fill="white" /></g><path opacity="0.2" fill-rule="evenodd" clip-rule="evenodd" d="M25 39.156C19.3831 39.1561 17.7042 37.3856 17.7042 37.3856C17.7042 37.3856 19.3829 35.6153 25 35.6152C30.6169 35.6151 32.2958 37.3856 32.2958 37.3856C32.2958 37.3856 30.6171 39.1559 25 39.156Z" fill="black" /><path fill-rule="evenodd" clip-rule="evenodd" d="M22.6499 39.156C17.4568 45.4145 10.8599 36.2408 4.11694 42.6433L6.08484 46.2961C10.4828 40.6242 24.9998 51.5094 24.9998 39.156H22.6499Z" fill="url(#paint2_linear_6_204)" stroke="black" stroke-linecap="round" stroke-linejoin="round" /><path fill-rule="evenodd" clip-rule="evenodd" d="M27.3499 39.156C32.543 45.4145 39.1399 36.2408 45.8819 42.6433L43.914 46.2961C39.516 40.6242 24.999 51.5094 24.999 39.156H27.3499Z" fill="url(#paint3_linear_6_204)" stroke="black" stroke-linecap="round" stroke-linejoin="round" /><g opacity="0.3" filter="url(#filter2_f_6_204)"><path fill-rule="evenodd" clip-rule="evenodd" d="M4.83374 42.735L6.23714 45.325L5.89138 42.9915C9.01148 40.6044 11.849 41.3721 13.9321 41.3931C13.9321 41.3931 8.08008 39.4384 4.83378 42.735H4.83374Z" fill="white" /></g><g opacity="0.2" filter="url(#filter3_f_6_204)"><path fill-rule="evenodd" clip-rule="evenodd" d="M45.242 42.769L44.7523 43.6576C42.847 41.3331 41.0133 40.9023 39.4335 40.8974C39.4335 40.8974 42.4507 40.1802 45.242 42.7691V42.769Z" fill="white" /></g><g opacity="0.2" filter="url(#filter4_f_6_204)"><path fill-rule="evenodd" clip-rule="evenodd" d="M23.672 12.366C23.422 12.4323 21.0687 9.9458 24.0896 8.3908C24.0006 8.3817 22.3323 10.5327 23.672 12.366Z" fill="white" /></g><g opacity="0.1" filter="url(#filter5_f_6_204)"><path fill-rule="evenodd" clip-rule="evenodd" d="M18.1427 35.9463L19.1942 32.673C19.1942 32.673 19.5632 32.4197 20.6487 32.244C20.6487 32.244 19.9026 34.444 21.1566 35.2535C19.0014 35.586 18.619 35.8015 18.1427 35.9462V35.9463Z" fill="white" /></g><defs><filter id="filter0_f_6_204" x="22.4253" y="6.87753" width="14.1397" height="31.0132" filterUnits="userSpaceOnUse" color-interpolation-filters="sRGB"><feFlood flood-opacity="0" result="BackgroundImageFix" /><feBlend mode="normal" in="SourceGraphic" in2="BackgroundImageFix" result="shape" /><feGaussianBlur stdDeviation="0.418085" result="effect1_foregroundBlur_6_204" /></filter><filter id="filter1_f_6_204" x="13.467" y="12.6551" width="12.2036" height="20.1616" filterUnits="userSpaceOnUse" color-interpolation-filters="sRGB"><feFlood flood-opacity="0" result="BackgroundImageFix" /><feBlend mode="normal" in="SourceGraphic" in2="BackgroundImageFix" result="shape" /><feGaussianBlur stdDeviation="0.617068" result="effect1_foregroundBlur_6_204" /></filter><filter id="filter2_f_6_204" x="4.0004" y="39.9844" width="10.7651" height="6.1739" filterUnits="userSpaceOnUse" color-interpolation-filters="sRGB"><feFlood flood-opacity="0" result="BackgroundImageFix" /><feBlend mode="normal" in="SourceGraphic" in2="BackgroundImageFix" result="shape" /><feGaussianBlur stdDeviation="0.41667" result="effect1_foregroundBlur_6_204" /></filter><filter id="filter3_f_6_204" x="38.7407" y="40.1134" width="7.19405" height="4.23692" filterUnits="userSpaceOnUse" color-interpolation-filters="sRGB"><feFlood flood-opacity="0" result="BackgroundImageFix" /><feBlend mode="normal" in="SourceGraphic" in2="BackgroundImageFix" result="shape" /><feGaussianBlur stdDeviation="0.346394" result="effect1_foregroundBlur_6_204" /></filter><filter id="filter4_f_6_204" x="22.3159" y="8.14315" width="2.02136" height="4.47177" filterUnits="userSpaceOnUse" color-interpolation-filters="sRGB"><feFlood flood-opacity="0" result="BackgroundImageFix" /><feBlend mode="normal" in="SourceGraphic" in2="BackgroundImageFix" result="shape" /><feGaussianBlur stdDeviation="0.12381" result="effect1_foregroundBlur_6_204" /></filter><filter id="filter5_f_6_204" x="17.6054" y="31.7067" width="4.08851" height="4.77688" filterUnits="userSpaceOnUse" color-interpolation-filters="sRGB"><feFlood flood-opacity="0" result="BackgroundImageFix" /><feBlend mode="normal" in="SourceGraphic" in2="BackgroundImageFix" result="shape" /><feGaussianBlur stdDeviation="0.268649" result="effect1_foregroundBlur_6_204" /></filter><linearGradient id="paint0_linear_6_204" x1="13.3742" y1="26.2472" x2="36.316" y2="26.2472" gradientUnits="userSpaceOnUse"><stop stop-color="#737373" /><stop offset="1" stop-color="#303030" /></linearGradient><linearGradient id="paint1_linear_6_204" x1="21.5713" y1="10.4656" x2="28.0773" y2="10.4656" gradientUnits="userSpaceOnUse"><stop stop-color="#737373" /><stop offset="1" stop-color="#303030" /></linearGradient><linearGradient id="paint2_linear_6_204" x1="3.53719" y1="42.725" x2="25.583" y2="42.725" gradientUnits="userSpaceOnUse"><stop stop-color="#737373" /><stop offset="1" stop-color="#303030" /></linearGradient><linearGradient id="paint3_linear_6_204" x1="24.4203" y1="42.725" x2="46.4656" y2="42.725" gradientUnits="userSpaceOnUse"><stop stop-color="#737373" /><stop offset="1" stop-color="#303030" /></linearGradient></defs></g>  `;
@@ -62,6 +64,43 @@ app.get("/", (req, res) => {
 
   svg +=
     '<marker id="arr" markerWidth="4" markerHeight="4" refX="1" refY="2" orient="auto"><path d="M3 2L3.96838e-09 4L1.78814e-07 -1.31134e-07L3 2Z" fill="#F00" /></marker></defs><g id="t2"><g id="t1"><rect x="0" y="0" width="50" height="50" fill="#f1f6b2" /><rect x="50" y="0" width="50" height="50" fill="#59935d" /><rect x="0" y="50" width="50" height="50" fill="#59935d" /><rect x="50" y="50" width="50" height="50" fill="#f1f6b2" /></g><use x="100" xlink:href="#t1" /><use y="100" xlink:href="#t1" /><use x="100" y="100" xlink:href="#t1" /></g><use x="200" xlink:href="#t2" /><use y="200" xlink:href="#t2" /><use x="200" y="200" xlink:href="#t2" />';
+
+  // TODO: refactor?
+  if (flip ^ (side === "w")) {
+    svg += '<text class="l" x="400" y="0" dx="-2" dy="1em" text-anchor="end">1</text>';
+    svg += '<text x="400" y="50" dx="-2" dy="1em" text-anchor="end">2</text>';
+    svg += '<text class="l" x="400" y="100" dx="-2" dy="1em" text-anchor="end">3</text>';
+    svg += '<text x="400" y="150" dx="-2" dy="1em" text-anchor="end">4</text>';
+    svg += '<text class="l" x="400" y="200" dx="-2" dy="1em" text-anchor="end">5</text>';
+    svg += '<text x="400" y="250" dx="-2" dy="1em" text-anchor="end">6</text>';
+    svg += '<text class="l" x="400" y="300" dx="-2" dy="1em" text-anchor="end">7</text>';
+    svg += '<text x="400" y="350" dx="-2" dy="1em" text-anchor="end">8</text>';
+    svg += '<text class="l" x="0" y="400" dx="2" dy="-2">h</text>';
+    svg += '<text x="50" y="400" dx="2" dy="-2">g</text>';
+    svg += '<text class="l" x="100" y="400" dx="2" dy="-2">f</text>';
+    svg += '<text x="150" y="400" dx="2" dy="-2">e</text>';
+    svg += '<text class="l" x="200" y="400" dx="2" dy="-2">d</text>';
+    svg += '<text x="250" y="400" dx="2" dy="-2">c</text>';
+    svg += '<text class="l" x="300" y="400" dx="2" dy="-2">b</text>';
+    svg += '<text x="350" y="400" dx="2" dy="-2">a</text>';
+  } else {
+    svg += '<text x="0" y="0" dx="2" dy="1em">8</text>';
+    svg += '<text class="l" x="0" y="50" dx="2" dy="1em">7</text>';
+    svg += '<text x="0" y="100" dx="2" dy="1em">6</text>';
+    svg += '<text class="l" x="0" y="150" dx="2" dy="1em">5</text>';
+    svg += '<text x="0" y="200" dx="2" dy="1em">4</text>';
+    svg += '<text class="l" x="0" y="250" dx="2" dy="1em">3</text>';
+    svg += '<text x="0" y="300" dx="2" dy="1em">2</text>';
+    svg += '<text class="l" x="0" y="350" dx="2" dy="1em">1</text>';
+    svg += '<text class="l" x="50" y="400" dx="-2" dy="-2" text-anchor="end">a</text>';
+    svg += '<text x="100" y="400" dx="-2" dy="-2" text-anchor="end">b</text>';
+    svg += '<text class="l" x="150" y="400" dx="-2" dy="-2" text-anchor="end">c</text>';
+    svg += '<text x="200" y="400" dx="-2" dy="-2" text-anchor="end">d</text>';
+    svg += '<text class="l" x="250" y="400" dx="-2" dy="-2" text-anchor="end">e</text>';
+    svg += '<text x="300" y="400" dx="-2" dy="-2" text-anchor="end">f</text>';
+    svg += '<text class="l" x="350" y="400" dx="-2" dy="-2" text-anchor="end">g</text>';
+    svg += '<text x="400" y="400" dx="-2" dy="-2" text-anchor="end">h</text>';
+  }
 
   if (has_mate) {
     check_squares_id.forEach((sq) => {

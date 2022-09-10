@@ -8,14 +8,16 @@
 
   <!-- HTML Meta Tags -->
   <title>Why is this a mate?</title>
-  <meta name="description" content="Because this:">
+  <meta name="description"
+    content="<%= has_mate ? 'Because this:' : 'Eh not really...' %>">
 
   <!-- Facebook Meta Tags -->
   <meta property="og:url"
     content="https://whymate.glitch.me/?fen=<%= fen %><%= flip ? '&flip' : '' %>">
   <meta property="og:type" content="website">
   <meta property="og:title" content="Why is this a mate?">
-  <meta property="og:description" content="Because this:">
+  <meta property="og:description"
+    content="<%= has_mate ? 'Because this:' : 'Eh not really...' %>">
   <meta property="og:image"
     content="https://whymate.glitch.me/?fen=<%= fen %><%= flip ? '&flip' : '' %>&img&og">
 
@@ -25,7 +27,8 @@
   <meta property="twitter:url"
     content="https://whymate.glitch.me/?fen=<%= fen %><%= flip ? '&flip' : '' %>">
   <meta name="twitter:title" content="Why is this a mate?">
-  <meta name="twitter:description" content="Because this:">
+  <meta name="twitter:description"
+    content="<%= has_mate ? 'Because this:' : 'Eh not really...' %>">
   <meta name="twitter:image"
     content="https://whymate.glitch.me/?fen=<%= fen %><%= flip ? '&flip' : '' %>&img&og">
 
@@ -34,7 +37,9 @@
 
 <body>
   <header>
-    <h1>Because this:</h1>
+    <h1>
+      <%= has_mate ? 'Because this:' : 'Eh not really...' %>
+    </h1>
     <button type="button" onclick="location.href='/'">
       🏠&#xFE0F; Home
     </button>
