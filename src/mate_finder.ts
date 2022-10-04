@@ -179,17 +179,21 @@ const checkScan =
     }
     // 2. Check sneaky horsey
     checking_piece = checkWhite ? "n" : "N";
-    if (is_king_at_board_edge !== "left") {
+    if (sq_til_left > 0) {
       if (boardData.at(si - 16 - 1) === checking_piece) return _(si - 16 - 1);
-      if (boardData.at(si - 8 - 2) === checking_piece) return _(si - 8 - 2);
-      if (boardData.at(si + 8 - 2) === checking_piece) return _(si + 8 - 2);
       if (boardData.at(si + 16 - 1) === checking_piece) return _(si + 16 - 1);
     }
-    if (is_king_at_board_edge !== "right") {
+    if (sq_til_left > 1) {
+      if (boardData.at(si - 8 - 2) === checking_piece) return _(si - 8 - 2);
+      if (boardData.at(si + 8 - 2) === checking_piece) return _(si + 8 - 2);
+    }
+    if (sq_til_right > 0) {
       if (boardData.at(si - 16 + 1) === checking_piece) return _(si - 16 + 1);
+      if (boardData.at(si + 16 + 1) === checking_piece) return _(si + 16 + 1);
+    }
+    if (sq_til_right > 1) {
       if (boardData.at(si - 8 + 2) === checking_piece) return _(si - 8 + 2);
       if (boardData.at(si + 8 + 2) === checking_piece) return _(si + 8 + 2);
-      if (boardData.at(si + 16 + 1) === checking_piece) return _(si + 16 + 1);
     }
     // 3. Check "strong" king
     checking_piece = checkWhite ? "k" : "K";
